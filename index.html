@@ -213,25 +213,18 @@
             letter-spacing: 8px;
         }
 
-        /* 3D Viewer Styles */
+        /* 3D Viewer Styles - Now Permanent in Hero Section */
         .viewer-container {
-            position: fixed;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 350px;
-            height: 400px;
-            background: rgba(60, 60, 60, 0.9);
-            border: 3px solid var(--rich-saffron);
-            border-radius: 0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            z-index: 50;
-            display: none;
-            overflow: hidden;
-        }
-
-        .viewer-container.active {
+            position: static;
+            transform: none;
+            width: 100%;
+            height: 100%;
             display: block;
+            background: rgba(60, 60, 60, 0.95);
+            border: 2px solid var(--rich-saffron);
+            border-radius: 10px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
 
         .viewer-header {
@@ -247,17 +240,6 @@
             align-items: center;
         }
 
-        .close-viewer {
-            cursor: pointer;
-            font-size: 24px;
-            line-height: 1;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-
-        .close-viewer:hover {
-            opacity: 1;
-        }
 
         #coffeeViewer {
             width: 100%;
@@ -338,13 +320,360 @@
             border-left-color: var(--deep-burgundy);
         }
 
+        /* Hero Section Styles */
+        .hero-section {
+            background: linear-gradient(135deg, var(--deep-burgundy), var(--warm-amber));
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            color: var(--cream-parchment);
+            box-shadow: 0 8px 32px rgba(114, 47, 55, 0.3);
+        }
+
+        .hero-main-layout {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            height: 400px;
+        }
+
+        .hero-content {
+            flex: 2;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            min-height: 320px;
+        }
+
+        .hero-viewer {
+            flex: 1;
+            height: 100%;
+            min-height: 320px;
+        }
+
+        .hero-image {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            background: rgba(247, 243, 233, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--rich-saffron);
+        }
+
+        .drink-preview {
+            font-size: 48px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .hero-details {
+            flex: 1;
+        }
+
+        .hero-drink-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--rich-saffron);
+        }
+
+        .hero-description {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .hero-ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .ingredient-tag {
+            background: rgba(247, 243, 233, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            border: 1px solid var(--rich-saffron);
+        }
+
+        /* Diet Filter Styles */
+        .diet-filter {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .filter-toggle {
+            display: flex;
+            background: var(--cream-parchment);
+            border-radius: 25px;
+            padding: 4px;
+            box-shadow: inset 0 2px 8px rgba(114, 47, 55, 0.1);
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            border-radius: 20px;
+            font-family: 'Amiri', serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--charcoal-ink);
+        }
+
+        .filter-btn.active {
+            background: var(--deep-burgundy);
+            color: var(--cream-parchment);
+            box-shadow: 0 2px 8px rgba(114, 47, 55, 0.3);
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: rgba(114, 47, 55, 0.1);
+        }
+
+        /* Drink Grid Styles */
+        .drinks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .drink-card {
+            background: var(--cream-parchment);
+            border: 2px solid var(--dusty-rose);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 16px rgba(114, 47, 55, 0.1);
+        }
+
+        .drink-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(114, 47, 55, 0.2);
+            border-color: var(--rich-saffron);
+        }
+
+        .drink-card.specialty {
+            border-color: var(--rich-saffron);
+            background: linear-gradient(135deg, var(--cream-parchment), rgba(232, 163, 23, 0.05));
+        }
+
+        .drink-card.specialty:hover {
+            border-color: var(--deep-burgundy);
+            background: linear-gradient(135deg, var(--cream-parchment), rgba(232, 163, 23, 0.1));
+        }
+
+        .drink-thumbnail {
+            font-size: 48px;
+            margin-bottom: 15px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .specialty-thumb {
+            background: linear-gradient(45deg, var(--rich-saffron), var(--warm-amber));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .drink-card h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--deep-burgundy);
+            margin-bottom: 8px;
+        }
+
+        .drink-card p {
+            color: var(--charcoal-ink);
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .drink-card .coming-soon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--burnt-orange);
+            color: var(--cream-parchment);
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .drink-card.hidden {
+            display: none;
+        }
+
+        /* Details Drawer Styles */
+        .details-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--cream-parchment);
+            border-top: 3px solid var(--rich-saffron);
+            border-radius: 20px 20px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-height: 67vh;
+            overflow-y: auto;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .details-drawer.active {
+            transform: translateY(0);
+        }
+
+        .drawer-handle {
+            width: 60px;
+            height: 4px;
+            background: var(--dusty-rose);
+            border-radius: 2px;
+            margin: 12px auto;
+            cursor: pointer;
+        }
+
+        .drawer-content {
+            padding: 20px 30px 40px;
+        }
+
+        .drawer-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .drawer-drink-name {
+            font-size: 24px;
+            color: var(--deep-burgundy);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .drawer-description {
+            font-size: 16px;
+            color: var(--charcoal-ink);
+            line-height: 1.6;
+        }
+
+        .drawer-ingredients {
+            margin: 25px 0;
+        }
+
+        .drawer-ingredients h4 {
+            color: var(--deep-burgundy);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .ingredients-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ingredient-item {
+            background: rgba(114, 47, 55, 0.1);
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            border: 1px solid var(--dusty-rose);
+        }
+
+        .allergen-flags {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(232, 163, 23, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid var(--rich-saffron);
+        }
+
+        .allergen-flags h4 {
+            color: var(--deep-burgundy);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .allergen-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .allergen-tag {
+            background: var(--warm-amber);
+            color: var(--cream-parchment);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .brew-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--deep-burgundy), var(--warm-amber));
+            color: var(--cream-parchment);
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Amiri', serif;
+            letter-spacing: 1px;
+        }
+
+        .brew-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(114, 47, 55, 0.3);
+        }
+
+        .brew-button:active {
+            transform: translateY(0);
+        }
+
+        .brewing-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--rich-saffron);
+            color: var(--deep-burgundy);
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .brewing-toast.show {
+            transform: translateX(0);
+        }
+
         @media (max-width: 1200px) {
             .viewer-container {
                 right: 20px;
                 width: 300px;
                 height: 350px;
             }
+
+            .drinks-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
         }
+
         @media (max-width: 768px) {
             .container {
                 padding: 40px 20px;
@@ -383,19 +712,87 @@
                 font-size: 16px;
             }
 
-            .viewer-container {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                top: auto;
-                transform: none;
-                width: 100%;
-                height: 300px;
-                border-radius: 0;
-                border: none;
-                border-top: 3px solid var(--rich-saffron);
+            /* Mobile Hero Section */
+            .hero-section {
+                padding: 25px;
             }
+
+            .hero-main-layout {
+                flex-direction: column;
+                height: auto;
+                gap: 20px;
+            }
+
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+                min-height: auto;
+            }
+
+            .hero-viewer {
+                min-height: 250px;
+                height: 250px;
+            }
+
+            .hero-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .drink-preview {
+                font-size: 40px;
+            }
+
+            .hero-drink-name {
+                font-size: 24px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            /* Mobile Grid */
+            .drinks-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .drink-card {
+                padding: 20px;
+            }
+
+            .drink-thumbnail {
+                font-size: 36px;
+            }
+
+            .drink-card h4 {
+                font-size: 16px;
+            }
+
+            .drink-card p {
+                font-size: 14px;
+            }
+
+            /* Mobile Filter */
+            .filter-btn {
+                padding: 10px 18px;
+                font-size: 14px;
+            }
+
+            /* Mobile Drawer */
+            .drawer-content {
+                padding: 15px 20px 30px;
+            }
+
+            .drawer-drink-name {
+                font-size: 20px;
+            }
+
+            .drawer-description {
+                font-size: 14px;
+            }
+
         }
     </style>
 </head>
@@ -426,48 +823,95 @@
         </div>
         
         <div class="content">
-            <div class="section">
-                <h2 class="section-title">Drinks</h2>
-                
-                <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Cold brew (iced or nitro)</p>
-                </div>
-                <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Espresso drinks</p>
-                </div>
-                <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Cacao</p>
-                </div>
-                <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Teas: matcha, barley, yerba mate <span class="coming-soon">coming soon: mid-July</span></p>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-title">Specialty <span class="coming-soon">coming soon: October</span></h2>
-                
-                <div class="menu-item" data-drink="call-the-cops">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>I'm Gonna Call the Cops — activated charcoal espresso</p>
-                </div>
-                <div class="menu-item" data-drink="wendys">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Ma'am/Sir, This is a Wendy's — lavender cold brew</p>
-                </div>
-                <div class="menu-item" data-drink="kill-myself">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>I'm Gonna Kill Myself (No Don't, You're So Hot) — chocolate + rose</p>
+            <!-- Hero Section with Drink of the Week and Permanent 3D Viewer -->
+            <div class="hero-section">
+                <div class="hero-main-layout">
+                    <div class="hero-content">
+                        <div class="hero-image" id="heroImage">
+                            <div class="drink-preview">☕</div>
+                        </div>
+                        <div class="hero-details">
+                            <h3 class="hero-drink-name" id="heroDrinkName">Drink of the Week</h3>
+                            <p class="hero-description" id="heroDescription">I'm Gonna Call the Cops — Velvety espresso with detoxifying charcoal and creamy oat milk</p>
+                            <div class="hero-ingredients" id="heroIngredients">
+                                <div class="ingredient-tag">Espresso</div>
+                                <div class="ingredient-tag">Oat Milk</div>
+                                <div class="ingredient-tag">Activated Charcoal</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-viewer">
+                        <div class="viewer-container permanent" id="viewerContainer">
+                            <div class="viewer-header">
+                                <span id="viewerHeader">3D Coffee Viewer</span>
+                            </div>
+                            <div id="coffeeViewer"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="section">
-                <h2 class="section-title">Bites <span class="coming-soon">coming soon: August</span></h2>
+
+            <!-- Diet Filter -->
+            <div class="diet-filter">
+                <div class="filter-toggle">
+                    <button class="filter-btn active" data-filter="all">All Drinks</button>
+                    <button class="filter-btn" data-filter="dairy-free">Oat & Plant-Based</button>
+                </div>
+            </div>
+
+            <!-- Drink Grid -->
+            <div class="drinks-grid">
+                <div class="drink-card" data-drink="cold-brew" data-category="dairy-free">
+                    <div class="drink-thumbnail">❄️</div>
+                    <h4>Cold Brew</h4>
+                    <p>Iced or nitro</p>
+                </div>
                 
-                <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Cantaloupe + red chard + orange</p>
+                <div class="drink-card" data-drink="espresso" data-category="dairy">
+                    <div class="drink-thumbnail">☕</div>
+                    <h4>Espresso Drinks</h4>
+                    <p>Traditional espresso</p>
                 </div>
-                <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Avocado + chocolate syrup + cayenne</p>
+                
+                <div class="drink-card" data-drink="cacao" data-category="dairy-free">
+                    <div class="drink-thumbnail">🍫</div>
+                    <h4>Cacao</h4>
+                    <p>Rich chocolate</p>
                 </div>
-                <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Rotating seasonal</p>
+                
+                <div class="drink-card" data-drink="tea" data-category="dairy-free">
+                    <div class="drink-thumbnail">🍵</div>
+                    <h4>Teas</h4>
+                    <p>Matcha, barley, yerba mate</p>
+                    <span class="coming-soon">July</span>
+                </div>
+                
+                <div class="drink-card specialty" data-drink="call-the-cops" data-category="dairy-free">
+                    <div class="drink-thumbnail specialty-thumb">⚫</div>
+                    <h4>Call the Cops</h4>
+                    <p>Charcoal espresso</p>
+                    <span class="coming-soon">October</span>
+                </div>
+                
+                <div class="drink-card specialty" data-drink="wendys" data-category="dairy-free">
+                    <div class="drink-thumbnail specialty-thumb">🟣</div>
+                    <h4>This is a Wendy's</h4>
+                    <p>Lavender cold brew</p>
+                    <span class="coming-soon">October</span>
+                </div>
+                
+                <div class="drink-card specialty" data-drink="kill-myself" data-category="dairy-free">
+                    <div class="drink-thumbnail specialty-thumb">🌹</div>
+                    <h4>No Don't, You're So Hot</h4>
+                    <p>Chocolate + rose</p>
+                    <span class="coming-soon">October</span>
+                </div>
+                
+                <div class="drink-card" data-drink="seasonal" data-category="dairy-free">
+                    <div class="drink-thumbnail">🍊</div>
+                    <h4>Seasonal Bites</h4>
+                    <p>Rotating selection</p>
+                    <span class="coming-soon">August</span>
                 </div>
             </div>
         </div>
@@ -490,13 +934,39 @@
         </footer>
     </div>
 
-    <!-- 3D Viewer Container -->
-    <div class="viewer-container" id="viewerContainer">
-        <div class="viewer-header">
-            <span id="viewerHeader">Coffee Visualization</span>
-            <span class="close-viewer" onclick="hideVisualization()">&times;</span>
+
+    <!-- Details Drawer -->
+    <div class="details-drawer" id="detailsDrawer">
+        <div class="drawer-handle" onclick="hideDrawer()"></div>
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3 class="drawer-drink-name" id="drawerDrinkName">Drink Name</h3>
+                <p class="drawer-description" id="drawerDescription">Drink description</p>
+            </div>
+            
+            <div class="drawer-ingredients">
+                <h4>Ingredients</h4>
+                <div class="ingredients-list" id="drawerIngredients">
+                    <!-- Ingredients will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="allergen-flags">
+                <h4>Allergen Information</h4>
+                <div class="allergen-tags">
+                    <span class="allergen-tag">Dairy-Free</span>
+                    <span class="allergen-tag">Vegan</span>
+                    <span class="allergen-tag">Gluten-Free</span>
+                </div>
+            </div>
+            
+            <button class="brew-button" onclick="brewDrink()">☕ Brew It!</button>
         </div>
-        <div id="coffeeViewer"></div>
+    </div>
+
+    <!-- Brewing Toast -->
+    <div class="brewing-toast" id="brewingToast">
+        🍺 Your drink is brewing...
     </div>
 
     <!-- Three.js and Scripts -->

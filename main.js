@@ -23,6 +23,8 @@ const menuData = {
     "description": "Velvety espresso with detoxifying charcoal and creamy oat milk, finished with edible gold drama.",
     "cupColor": "#722F37",
     "steamColor": "#E8A317",
+    "thumbnail": "⚫",
+    "category": "dairy-free",
     "ingredients": [
       { "name": "Espresso", "volume": 120, "color": "#4B2E2B" },
       { "name": "Oat Milk", "volume": 240, "color": "#F5F5DC" },
@@ -37,6 +39,8 @@ const menuData = {
     "description": "Lavender-infused cold brew shaken with vanilla cashew milk and adaptogenic calm.",
     "cupColor": "#722F37",
     "steamColor": "#C5A3FF",
+    "thumbnail": "🟣",
+    "category": "dairy-free",
     "ingredients": [
       { "name": "Lavender Cold Brew", "volume": 120, "color": "#4B3B6B" },
       { "name": "Vanilla Cashew Milk", "volume": 120, "color": "#F3E5AB" },
@@ -50,6 +54,8 @@ const menuData = {
     "description": "Ceremonial matcha meets sparkling rosemary tonic with a rosy, spirulina-green twist.",
     "cupColor": "#722F37",
     "steamColor": "#87CEEB",
+    "thumbnail": "🌹",
+    "category": "dairy-free",
     "ingredients": [
       { "name": "Matcha Base", "volume": 240, "color": "#7CFC00" },
       { "name": "Almond Milk", "volume": 120, "color": "#F5DEB3" },
@@ -58,14 +64,164 @@ const menuData = {
       { "name": "Rosewater", "volume": 5, "color": "#FFC0CB" },
       { "name": "Spirulina", "volume": 2.5, "color": "#00FF7F" }
     ]
+  },
+  "cold-brew": {
+    "name": "Cold Brew",
+    "description": "Smooth, refreshing cold brew coffee served iced or on nitro tap.",
+    "cupColor": "#722F37",
+    "steamColor": null,
+    "thumbnail": "❄️",
+    "category": "dairy-free",
+    "ingredients": [
+      { "name": "Cold Brew Coffee", "volume": 300, "color": "#4B2E2B" },
+      { "name": "Ice", "volume": 50, "color": "#E6F3FF" }
+    ]
+  },
+  "espresso": {
+    "name": "Espresso Drinks",
+    "description": "Traditional espresso-based beverages with rich, bold flavor.",
+    "cupColor": "#722F37",
+    "steamColor": "#F5F5DC",
+    "thumbnail": "☕",
+    "category": "dairy",
+    "ingredients": [
+      { "name": "Espresso", "volume": 60, "color": "#4B2E2B" },
+      { "name": "Steamed Milk", "volume": 180, "color": "#F5F5DC" },
+      { "name": "Foam", "volume": 30, "color": "#FFFFFF" }
+    ]
+  },
+  "cacao": {
+    "name": "Cacao",
+    "description": "Rich, ceremonial cacao drink with warming spices.",
+    "cupColor": "#722F37",
+    "steamColor": "#D2691E",
+    "thumbnail": "🍫",
+    "category": "dairy-free",
+    "ingredients": [
+      { "name": "Ceremonial Cacao", "volume": 200, "color": "#8B4513" },
+      { "name": "Oat Milk", "volume": 120, "color": "#F5F5DC" },
+      { "name": "Cinnamon", "volume": 2, "color": "#D2691E" },
+      { "name": "Cayenne", "volume": 1, "color": "#FF4500" }
+    ]
   }
 };
+
+// Global state
+let currentDrink = null;
+let inactivityTimer = null;
+let drinkOfTheWeek = 'call-the-cops';
 
 let scene, camera, renderer, controls;
 let currentCup = null;
 let activeMenuItem = null;
 let stars = null;
 let starSizes = null;
+
+// New grid functionality
+function updateHeroSection(drinkKey) {
+    const drinkData = menuData[drinkKey];
+    if (!drinkData) return;
+    
+    document.getElementById('heroDrinkName').textContent = drinkData.name;
+    document.getElementById('heroDescription').textContent = drinkData.description;
+    document.querySelector('.drink-preview').textContent = drinkData.thumbnail;
+    
+    const heroIngredients = document.getElementById('heroIngredients');
+    heroIngredients.innerHTML = '';
+    drinkData.ingredients.slice(0, 3).forEach(ingredient => {
+        const tag = document.createElement('div');
+        tag.className = 'ingredient-tag';
+        tag.textContent = ingredient.name;
+        heroIngredients.appendChild(tag);
+    });
+}
+
+function filterDrinks(category) {
+    const cards = document.querySelectorAll('.drink-card');
+    cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+}
+
+function showDetailsDrawer(drinkKey) {
+    const drinkData = menuData[drinkKey];
+    if (!drinkData) return;
+    
+    // Update drawer content
+    document.getElementById('drawerDrinkName').textContent = drinkData.name;
+    document.getElementById('drawerDescription').textContent = drinkData.description;
+    
+    // Update ingredients
+    const ingredientsList = document.getElementById('drawerIngredients');
+    ingredientsList.innerHTML = '';
+    drinkData.ingredients.forEach(ingredient => {
+        const item = document.createElement('div');
+        item.className = 'ingredient-item';
+        item.textContent = ingredient.name;
+        ingredientsList.appendChild(item);
+    });
+    
+    // Show drawer
+    document.getElementById('detailsDrawer').classList.add('active');
+    currentDrink = drinkKey;
+    
+    // Reset inactivity timer
+    resetInactivityTimer();
+}
+
+function hideDrawer() {
+    document.getElementById('detailsDrawer').classList.remove('active');
+    currentDrink = null;
+    clearInactivityTimer();
+}
+
+function brewDrink() {
+    if (!currentDrink) return;
+    
+    // Show brewing toast with optimistic UI
+    const toast = document.getElementById('brewingToast');
+    toast.classList.add('show');
+    
+    // Hide drawer
+    hideDrawer();
+    
+    // Simulate order persistence (would be Supabase in real implementation)
+    const orderData = {
+        drinkId: currentDrink,
+        variant: 'default',
+        timestamp: new Date().toISOString()
+    };
+    
+    console.log('Order placed:', orderData);
+    
+    // Hide toast after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+function resetInactivityTimer() {
+    clearInactivityTimer();
+    inactivityTimer = setTimeout(() => {
+        hideDrawer();
+        updateHeroSection(drinkOfTheWeek);
+    }, 8000); // 8 seconds
+}
+
+function clearInactivityTimer() {
+    if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+    }
+}
+
+// Make functions globally accessible
+window.hideDrawer = hideDrawer;
+window.brewDrink = brewDrink;
 
 // Initialize Three.js scene
 function initThreeScene() {
@@ -496,54 +652,37 @@ function showDrinkVisualization(drinkKey) {
     const drinkData = menuData[drinkKey];
     if (!drinkData) return;
     
-    // Show viewer container first
-    document.getElementById('viewerContainer').classList.add('active');
+    // Update viewer header
+    document.getElementById('viewerHeader').textContent = drinkData.name;
     
-    // Small delay to ensure container is visible before initializing Three.js
-    setTimeout(() => {
-        // Initialize Three.js scene if not already done
-        if (!scene) {
-            try {
-                initThreeScene();
-                startRenderLoop();
-            } catch (error) {
-                console.error('Error initializing Three.js:', error);
-                return;
-            }
-        }
-        
-        // Update viewer header
-        document.getElementById('viewerHeader').textContent = drinkData.name;
-        
-        // Update active menu item
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        const menuItem = document.querySelector(`[data-drink="${drinkKey}"]`);
-        if (menuItem) {
-            menuItem.classList.add('active');
-            activeMenuItem = menuItem;
-        }
-        
-        // Create new cup visualization
+    // Update active menu item
+    document.querySelectorAll('.drink-card').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    const menuItem = document.querySelector(`[data-drink="${drinkKey}"]`);
+    if (menuItem) {
+        menuItem.classList.add('active');
+        activeMenuItem = menuItem;
+    }
+    
+    // Create new cup visualization if scene is initialized
+    if (scene) {
         createCoffeeCup(drinkData);
         
         // Force a render
         if (renderer && scene && camera) {
             renderer.render(scene, camera);
         }
-    }, 100);
+    }
 }
 
 function hideVisualization() {
-    document.getElementById('viewerContainer').classList.remove('active');
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-    });
+    // Reset to drink of the week
+    showDrinkVisualization(drinkOfTheWeek);
 }
 
-// Make hideVisualization globally accessible
+// Make functions globally accessible
 window.hideVisualization = hideVisualization;
 
 function startRenderLoop() {
@@ -571,8 +710,10 @@ function startRenderLoop() {
             stars.geometry.attributes.size.needsUpdate = true;
         }
         
-        // Rotate steam particles
+        // Slowly rotate the entire cup and animate steam particles
         if (currentCup) {
+            currentCup.rotation.y += 0.003; // Slow rotation for the entire cup
+            
             currentCup.children.forEach(child => {
                 if (child instanceof THREE.Points && child !== stars) {
                     child.rotation.y += 0.005;
@@ -604,12 +745,48 @@ function startRenderLoop() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    // Add hover listeners to specialty drink items
-    const specialtyDrinks = document.querySelectorAll('.menu-item[data-drink]');
-    const viewerContainer = document.getElementById('viewerContainer');
+    // Set initial hero section to drink of the week
+    updateHeroSection(drinkOfTheWeek);
+    
+    // Add filter button listeners
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Update active state
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Filter drinks
+            const filter = btn.dataset.filter;
+            filterDrinks(filter);
+            
+            resetInactivityTimer();
+        });
+    });
+    
+    // Add drink card listeners
+    const drinkCards = document.querySelectorAll('.drink-card');
+    drinkCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const drinkKey = card.dataset.drink;
+            
+            // Update hero section
+            updateHeroSection(drinkKey);
+            
+            // Show details drawer
+            showDetailsDrawer(drinkKey);
+            
+            // Show 3D visualization for specialty drinks
+            if (card.classList.contains('specialty')) {
+                showDrinkVisualization(drinkKey);
+            }
+        });
+    });
+    
+    // Add hover listeners for 3D visualization on desktop
+    const specialtyCards = document.querySelectorAll('.drink-card.specialty');
     let hideTimeout = null;
     
-    // Function to clear hide timeout
     const clearHideTimeout = () => {
         if (hideTimeout) {
             clearTimeout(hideTimeout);
@@ -617,52 +794,71 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // Function to start hide timeout
     const startHideTimeout = () => {
         clearHideTimeout();
         hideTimeout = setTimeout(() => {
             hideVisualization();
-        }, 300); // 300ms delay before hiding
+        }, 3000); // Longer timeout since it's permanent viewer
     };
     
-    specialtyDrinks.forEach(item => {
-        item.addEventListener('mouseenter', () => {
-            clearHideTimeout();
-            const drinkKey = item.getAttribute('data-drink');
-            showDrinkVisualization(drinkKey);
+    // Only add hover effects on non-touch devices
+    if (!('ontouchstart' in window)) {
+        specialtyCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                clearHideTimeout();
+                const drinkKey = card.dataset.drink;
+                if (menuData[drinkKey]) {
+                    showDrinkVisualization(drinkKey);
+                }
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                startHideTimeout();
+            });
         });
         
-        item.addEventListener('mouseleave', () => {
+        // Keep current drink when hovering over viewer
+        const viewerContainer = document.getElementById('viewerContainer');
+        viewerContainer.addEventListener('mouseenter', () => {
+            clearHideTimeout();
+        });
+        
+        viewerContainer.addEventListener('mouseleave', () => {
             startHideTimeout();
         });
-        
-        // Mobile touch support
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            clearHideTimeout();
-            const drinkKey = item.getAttribute('data-drink');
-            if (item.classList.contains('active')) {
-                hideVisualization();
-            } else {
-                showDrinkVisualization(drinkKey);
-            }
-        });
-    });
+    }
     
-    // Keep viewer open when hovering over it
-    viewerContainer.addEventListener('mouseenter', () => {
-        clearHideTimeout();
-    });
-    
-    viewerContainer.addEventListener('mouseleave', () => {
-        startHideTimeout();
-    });
-    
-    // Close viewer when clicking outside
+    // Close drawer when clicking outside
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.menu-item[data-drink]') && 
+        if (!e.target.closest('.drink-card') && 
+            !e.target.closest('.details-drawer') &&
             !e.target.closest('.viewer-container')) {
+            hideDrawer();
             hideVisualization();
         }
     });
+    
+    // Handle drawer handle click
+    document.querySelector('.drawer-handle').addEventListener('click', hideDrawer);
+    
+    // Start inactivity timer
+    resetInactivityTimer();
+    
+    // Initialize 3D viewer with drink of the week
+    setTimeout(() => {
+        try {
+            initThreeScene();
+            startRenderLoop();
+            
+            // Display drink of the week
+            const drinkData = menuData[drinkOfTheWeek];
+            if (drinkData) {
+                document.getElementById('viewerHeader').textContent = drinkData.name;
+                createCoffeeCup(drinkData);
+            }
+        } catch (error) {
+            console.error('Error initializing Three.js:', error);
+        }
+    }, 100);
 });
+
