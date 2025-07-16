@@ -1,3 +1,20 @@
+// Supabase configuration
+const SUPABASE_URL = 'https://rnulfniumilpluvpxfgd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJudWxmbml1bWlscGx1dnB4ZmdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NDI0MjEsImV4cCI6MjA2ODIxODQyMX0.pPVjZjfFEDp8WmWOiOammVUyrquvOF7Keiz1OnbbQbg';
+
+// Supabase client initialization
+let supabase = null;
+
+// Initialize Supabase client
+function initSupabase() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Supabase client initialized successfully');
+    } else {
+        console.warn('Supabase client not loaded - check script loading');
+    }
+}
+
 // Cup configuration constants
 const CUP_CONFIG = {
     TOP_RADIUS: 0.4,
@@ -179,8 +196,14 @@ function hideDrawer() {
     clearInactivityTimer();
 }
 
-function brewDrink() {
-    if (!currentDrink) return;
+async function brewDrink() {
+    if (!currentDrink) {
+        console.error('No current drink selected');
+        return;
+    }
+    
+    // Store current drink before hiding drawer (which sets currentDrink to null)
+    const selectedDrink = currentDrink;
     
     // Show brewing toast with optimistic UI
     const toast = document.getElementById('brewingToast');
@@ -189,19 +212,209 @@ function brewDrink() {
     // Hide drawer
     hideDrawer();
     
-    // Simulate order persistence (would be Supabase in real implementation)
+    // Prepare order data
     const orderData = {
-        drinkId: currentDrink,
+        drink_id: selectedDrink,
         variant: 'default',
-        timestamp: new Date().toISOString()
+        ordered_at: new Date().toISOString()
     };
     
-    console.log('Order placed:', orderData);
+    try {
+        console.log('Attempting to place order for:', selectedDrink);
+        await submitOrder(orderData);
+        console.log('Order placed successfully:', orderData);
+        
+        // Update toast to success message
+        toast.textContent = '✅ Order placed successfully!';
+        
+    } catch (error) {
+        console.error('Order failed:', error);
+        
+        // Update toast to error message with more detail
+        toast.textContent = `❌ Order failed: ${error.message}`;
+        toast.style.background = 'var(--burnt-orange)';
+    }
     
     // Hide toast after 3 seconds
     setTimeout(() => {
         toast.classList.remove('show');
+        // Reset toast styling
+        toast.textContent = '🍺 Your drink is brewing...';
+        toast.style.background = 'var(--rich-saffron)';
     }, 3000);
+}
+
+// Submit order to Supabase using client
+async function submitOrder(orderData) {
+    try {
+        if (!supabase) {
+            throw new Error('Database connection not initialized - please refresh the page');
+        }
+
+        // Validate required fields
+        if (!orderData.drink_id) {
+            throw new Error('Drink ID is required');
+        }
+        
+        if (!orderData.ordered_at) {
+            throw new Error('Order timestamp is required');
+        }
+
+        console.log('Submitting order:', orderData);
+        
+        const { data, error } = await supabase
+            .from('orders')
+            .insert([orderData]);
+
+        if (error) {
+            console.error('Supabase error:', error);
+            
+            // Provide more specific error messages
+            if (error.code === 'PGRST116') {
+                throw new Error('Orders table not found - please contact support');
+            } else if (error.code === '23505') {
+                throw new Error('Duplicate order detected');
+            } else if (error.code === '42501') {
+                throw new Error('Permission denied - please check your connection');
+            } else {
+                throw new Error(`Database error: ${error.message}`);
+            }
+        }
+
+        console.log('Order submitted successfully:', data);
+        return { success: true, data };
+    } catch (error) {
+        console.error('Order submission error:', error);
+        throw error;
+    }
+}
+
+// Submit feedback to Supabase using client
+async function submitFeedback(feedbackData) {
+    try {
+        if (!supabase) {
+            throw new Error('Database connection not initialized - please refresh the page');
+        }
+
+        // Validate required fields
+        if (!feedbackData.drink_id) {
+            throw new Error('Drink ID is required');
+        }
+        
+        if (!feedbackData.rating || feedbackData.rating < 1 || feedbackData.rating > 5) {
+            throw new Error('Valid rating (1-5) is required');
+        }
+
+        console.log('Submitting feedback:', feedbackData);
+        
+        const { data, error } = await supabase
+            .from('feedback')
+            .insert([feedbackData]);
+
+        if (error) {
+            console.error('Supabase error:', error);
+            
+            // Provide more specific error messages
+            if (error.code === 'PGRST116') {
+                throw new Error('Feedback table not found - please contact support');
+            } else if (error.code === '23505') {
+                throw new Error('Duplicate feedback detected');
+            } else if (error.code === '42501') {
+                throw new Error('Permission denied - please check your connection');
+            } else {
+                throw new Error(`Database error: ${error.message}`);
+            }
+        }
+
+        console.log('Feedback submitted successfully:', data);
+        return { success: true, data };
+    } catch (error) {
+        console.error('Feedback submission error:', error);
+        throw error;
+    }
+}
+
+// Show feedback modal for current drink (wrapper to avoid null currentDrink issue)
+function showFeedbackModalForCurrentDrink() {
+    if (!currentDrink) {
+        console.error('No current drink selected for feedback');
+        return;
+    }
+    showFeedbackModal(currentDrink);
+}
+
+// Show feedback modal
+function showFeedbackModal(drinkId) {
+    const modal = document.getElementById('feedbackModal');
+    modal.dataset.drinkId = drinkId;
+    modal.classList.add('active');
+}
+
+// Hide feedback modal
+function hideFeedbackModal() {
+    const modal = document.getElementById('feedbackModal');
+    modal.classList.remove('active');
+    // Reset form
+    document.getElementById('feedbackForm').reset();
+}
+
+// Submit feedback form
+async function submitFeedbackForm() {
+    const modal = document.getElementById('feedbackModal');
+    const drinkId = modal.dataset.drinkId;
+    const rating = document.querySelector('input[name="rating"]:checked')?.value;
+    const privateText = document.getElementById('feedbackText').value;
+    
+    if (!rating) {
+        showFeedbackError('Please select a rating before submitting');
+        return;
+    }
+    
+    if (!drinkId) {
+        showFeedbackError('No drink selected for feedback');
+        return;
+    }
+    
+    const feedbackData = {
+        drink_id: drinkId,
+        rating: parseInt(rating)
+    };
+    
+    try {
+        console.log('Attempting to submit feedback for:', drinkId);
+        await submitFeedback(feedbackData);
+        console.log('Feedback submitted successfully:', feedbackData);
+        
+        // Show success message
+        const toast = document.getElementById('feedbackToast');
+        toast.textContent = '✅ Feedback submitted successfully!';
+        toast.style.background = 'var(--rich-saffron)';
+        toast.classList.add('show');
+        
+        hideFeedbackModal();
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Feedback submission failed:', error);
+        showFeedbackError(`Failed to submit feedback: ${error.message}`);
+    }
+}
+
+// Show feedback error with toast
+function showFeedbackError(message) {
+    const toast = document.getElementById('feedbackToast');
+    toast.textContent = `❌ ${message}`;
+    toast.style.background = 'var(--burnt-orange)';
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        // Reset toast styling
+        toast.style.background = 'var(--rich-saffron)';
+    }, 4000);
 }
 
 function resetInactivityTimer() {
@@ -222,6 +435,11 @@ function clearInactivityTimer() {
 // Make functions globally accessible
 window.hideDrawer = hideDrawer;
 window.brewDrink = brewDrink;
+window.showFeedbackModalForCurrentDrink = showFeedbackModalForCurrentDrink;
+window.showFeedbackModal = showFeedbackModal;
+window.hideFeedbackModal = hideFeedbackModal;
+window.submitFeedbackForm = submitFeedbackForm;
+window.showFeedbackError = showFeedbackError;
 
 // Initialize Three.js scene
 function initThreeScene() {
@@ -745,6 +963,16 @@ function startRenderLoop() {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Supabase with retry logic
+    const tryInitSupabase = () => {
+        if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+            initSupabase();
+        } else {
+            console.log('Waiting for Supabase SDK to load...');
+            setTimeout(tryInitSupabase, 100);
+        }
+    };
+    tryInitSupabase();
     // Set initial hero section to drink of the week
     updateHeroSection(drinkOfTheWeek);
     

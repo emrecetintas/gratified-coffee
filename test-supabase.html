@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            background: #f8f9fa;
+        }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Supabase Connection Test</h1>
+        <p>This tool will test your Supabase connection and database tables.</p>
+        
+        <div id="status">
+            <div class="status">Ready to test connection...</div>
+        </div>
+        
+        <button onclick="testConnection()">Test Connection</button>
+        <button onclick="testOrderInsert()">Test Order Insert</button>
+        <button onclick="testFeedbackInsert()">Test Feedback Insert</button>
+        <button onclick="testInvalidFeedback()">Test Invalid Feedback</button>
+        <button onclick="checkTables()">Check Tables</button>
+        
+        <div id="results" class="test-results"></div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+    <script>
+        // Supabase configuration (same as in main.js)
+        const SUPABASE_URL = 'https://rnulfniumilpluvpxfgd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJudWxmbml1bWlscGx1dnB4ZmdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NDI0MjEsImV4cCI6MjA2ODIxODQyMX0.pPVjZjfFEDp8WmWOiOammVUyrquvOF7Keiz1OnbbQbg';
+        
+        let supabase = null;
+        
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function appendResult(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `<div>${message}</div>`;
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testConnection() {
+            clearResults();
+            updateStatus('🔄 Testing connection...');
+            
+            try {
+                // Initialize Supabase client
+                if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    updateStatus('✅ Supabase client initialized successfully', 'success');
+                    appendResult('✅ Supabase SDK loaded and client created');
+                } else {
+                    throw new Error('Supabase SDK not loaded');
+                }
+                
+                // Test basic connection
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                updateStatus('✅ Connection successful!', 'success');
+                appendResult('✅ Successfully connected to Supabase database');
+                
+            } catch (error) {
+                updateStatus(`❌ Connection failed: ${error.message}`, 'error');
+                appendResult(`❌ Error: ${error.message}`);
+                console.error('Connection test error:', error);
+            }
+        }
+        
+        async function testOrderInsert() {
+            clearResults();
+            updateStatus('🔄 Testing order insert...');
+            
+            if (!supabase) {
+                await testConnection();
+                if (!supabase) return;
+            }
+            
+            try {
+                const orderData = {
+                    drink_id: 'test-drink',
+                    variant: 'test',
+                    ordered_at: new Date().toISOString()
+                };
+                
+                const { data, error } = await supabase
+                    .from('orders')
+                    .insert([orderData]);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                updateStatus('✅ Order insert successful!', 'success');
+                appendResult('✅ Test order inserted successfully');
+                appendResult(`<pre>${JSON.stringify(orderData, null, 2)}</pre>`);
+                
+            } catch (error) {
+                updateStatus(`❌ Order insert failed: ${error.message}`, 'error');
+                appendResult(`❌ Error: ${error.message}`);
+                console.error('Order insert test error:', error);
+            }
+        }
+        
+        async function testFeedbackInsert() {
+            clearResults();
+            updateStatus('🔄 Testing feedback insert...');
+            
+            if (!supabase) {
+                await testConnection();
+                if (!supabase) return;
+            }
+            
+            try {
+                const feedbackData = {
+                    drink_id: 'test-drink',
+                    rating: 5,
+                    private_text: 'Test feedback',
+                    created_at: new Date().toISOString()
+                };
+                
+                const { data, error } = await supabase
+                    .from('feedback')
+                    .insert([feedbackData]);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                updateStatus('✅ Feedback insert successful!', 'success');
+                appendResult('✅ Test feedback inserted successfully');
+                appendResult(`<pre>${JSON.stringify(feedbackData, null, 2)}</pre>`);
+                
+            } catch (error) {
+                updateStatus(`❌ Feedback insert failed: ${error.message}`, 'error');
+                appendResult(`❌ Error: ${error.message}`);
+                console.error('Feedback insert test error:', error);
+            }
+        }
+        
+        async function testInvalidFeedback() {
+            clearResults();
+            updateStatus('🔄 Testing invalid feedback submission...');
+            
+            if (!supabase) {
+                await testConnection();
+                if (!supabase) return;
+            }
+            
+            try {
+                appendResult('Testing various invalid feedback scenarios...');
+                
+                // Test 1: Missing drink_id
+                try {
+                    const invalidData1 = {
+                        rating: 5,
+                        private_text: 'Test feedback without drink_id',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    await supabase.from('feedback').insert([invalidData1]);
+                    appendResult('❌ Test 1 failed: Should have rejected missing drink_id');
+                } catch (error) {
+                    appendResult(`✅ Test 1 passed: Correctly rejected missing drink_id - ${error.message}`);
+                }
+                
+                // Test 2: Invalid rating
+                try {
+                    const invalidData2 = {
+                        drink_id: 'test-drink',
+                        rating: 10, // Invalid rating
+                        private_text: 'Test feedback with invalid rating',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    await supabase.from('feedback').insert([invalidData2]);
+                    appendResult('❌ Test 2 failed: Should have rejected invalid rating');
+                } catch (error) {
+                    appendResult(`✅ Test 2 passed: Correctly rejected invalid rating - ${error.message}`);
+                }
+                
+                // Test 3: Missing rating
+                try {
+                    const invalidData3 = {
+                        drink_id: 'test-drink',
+                        private_text: 'Test feedback without rating',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    await supabase.from('feedback').insert([invalidData3]);
+                    appendResult('❌ Test 3 failed: Should have rejected missing rating');
+                } catch (error) {
+                    appendResult(`✅ Test 3 passed: Correctly rejected missing rating - ${error.message}`);
+                }
+                
+                updateStatus('✅ Invalid feedback tests completed', 'success');
+                
+            } catch (error) {
+                updateStatus(`❌ Invalid feedback test failed: ${error.message}`, 'error');
+                appendResult(`❌ Error: ${error.message}`);
+                console.error('Invalid feedback test error:', error);
+            }
+        }
+        
+        async function checkTables() {
+            clearResults();
+            updateStatus('🔄 Checking tables...');
+            
+            if (!supabase) {
+                await testConnection();
+                if (!supabase) return;
+            }
+            
+            try {
+                // Check orders table
+                const { data: ordersData, error: ordersError } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .limit(5);
+                
+                if (ordersError) {
+                    appendResult(`❌ Orders table error: ${ordersError.message}`);
+                } else {
+                    appendResult(`✅ Orders table exists with ${ordersData.length} sample records`);
+                    if (ordersData.length > 0) {
+                        appendResult(`<pre>${JSON.stringify(ordersData, null, 2)}</pre>`);
+                    }
+                }
+                
+                // Check feedback table
+                const { data: feedbackData, error: feedbackError } = await supabase
+                    .from('feedback')
+                    .select('*')
+                    .limit(5);
+                
+                if (feedbackError) {
+                    appendResult(`❌ Feedback table error: ${feedbackError.message}`);
+                } else {
+                    appendResult(`✅ Feedback table exists with ${feedbackData.length} sample records`);
+                    if (feedbackData.length > 0) {
+                        appendResult(`<pre>${JSON.stringify(feedbackData, null, 2)}</pre>`);
+                    }
+                }
+                
+                updateStatus('✅ Table check completed', 'success');
+                
+            } catch (error) {
+                updateStatus(`❌ Table check failed: ${error.message}`, 'error');
+                appendResult(`❌ Error: ${error.message}`);
+                console.error('Table check error:', error);
+            }
+        }
+        
+        // Auto-test connection on page load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 500);
+        });
+    </script>
+</body>
+</html> 

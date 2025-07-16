@@ -661,6 +661,200 @@
         .brewing-toast.show {
             transform: translateX(0);
         }
+        
+        /* Feedback Button Styles */
+        .drawer-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .feedback-button {
+            width: 100%;
+            background: rgba(114, 47, 55, 0.1);
+            color: var(--deep-burgundy);
+            border: 2px solid var(--dusty-rose);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Amiri', serif;
+        }
+        
+        .feedback-button:hover {
+            background: rgba(114, 47, 55, 0.2);
+            border-color: var(--deep-burgundy);
+        }
+        
+        /* Feedback Modal Styles */
+        .feedback-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .feedback-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-content {
+            position: relative;
+            background: var(--cream-parchment);
+            border-radius: 15px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .feedback-modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            background: var(--deep-burgundy);
+            color: var(--cream-parchment);
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--cream-parchment);
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(247, 243, 233, 0.2);
+        }
+        
+        .feedback-form {
+            padding: 25px;
+        }
+        
+        .rating-section {
+            margin-bottom: 25px;
+        }
+        
+        .rating-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--deep-burgundy);
+        }
+        
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .star-rating input[type="radio"] {
+            display: none;
+        }
+        
+        .star-rating label {
+            color: #ccc;
+            font-size: 30px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            margin: 0;
+        }
+        
+        .star-rating input[type="radio"]:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: var(--rich-saffron);
+        }
+        
+        .feedback-text-section {
+            margin-bottom: 25px;
+        }
+        
+        .feedback-text-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--deep-burgundy);
+        }
+        
+        .feedback-text-section textarea {
+            width: 100%;
+            border: 2px solid var(--dusty-rose);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'Amiri', serif;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .feedback-text-section textarea:focus {
+            outline: none;
+            border-color: var(--rich-saffron);
+        }
+        
+        .submit-feedback-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--deep-burgundy), var(--warm-amber));
+            color: var(--cream-parchment);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Amiri', serif;
+        }
+        
+        .submit-feedback-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(114, 47, 55, 0.3);
+        }
 
         @media (max-width: 1200px) {
             .viewer-container {
@@ -790,6 +984,15 @@
             }
 
             .drawer-description {
+                font-size: 14px;
+            }
+            
+            .drawer-actions {
+                gap: 8px;
+            }
+            
+            .feedback-button {
+                padding: 10px;
                 font-size: 14px;
             }
 
@@ -960,7 +1163,10 @@
                 </div>
             </div>
             
-            <button class="brew-button" onclick="brewDrink()">☕ Brew It!</button>
+            <div class="drawer-actions">
+                <button class="brew-button" onclick="brewDrink()">☕ Brew It!</button>
+                <button class="feedback-button" onclick="showFeedbackModalForCurrentDrink()">💭 Leave Feedback</button>
+            </div>
         </div>
     </div>
 
@@ -968,7 +1174,50 @@
     <div class="brewing-toast" id="brewingToast">
         🍺 Your drink is brewing...
     </div>
+    
+    <!-- Feedback Toast -->
+    <div class="brewing-toast" id="feedbackToast" style="top: 80px;">
+        💭 Feedback submitted!
+    </div>
+    
+    <!-- Feedback Modal -->
+    <div class="feedback-modal" id="feedbackModal">
+        <div class="modal-backdrop" onclick="hideFeedbackModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Your Thoughts</h3>
+                <button class="modal-close" onclick="hideFeedbackModal()">×</button>
+            </div>
+            <form id="feedbackForm" class="feedback-form">
+                <div class="rating-section">
+                    <label>How was your drink?</label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5">
+                        <label for="star5" title="5 stars">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4" title="4 stars">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3" title="3 stars">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2" title="2 stars">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1" title="1 star">★</label>
+                    </div>
+                </div>
+                
+                <div class="feedback-text-section">
+                    <label for="feedbackText">Tell us more (optional):</label>
+                    <textarea id="feedbackText" placeholder="Share your experience with this drink..." rows="4"></textarea>
+                </div>
+                
+                <button type="button" class="submit-feedback-btn" onclick="submitFeedbackForm()">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
 
+    <!-- Supabase CDN -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <!-- Three.js and Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
@@ -1034,3 +1283,6 @@ audio.addEventListener('error', (e) => {
 </script>
 
 </html>
+
+
+#gratifiedwegrow!
