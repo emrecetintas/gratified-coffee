@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gratified Coffee - Orders View</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #722F37; color: white; cursor: pointer; user-select: none; }
+        th:hover { background-color: #E8A317; }
+        .sort-indicator { margin-left: 8px; opacity: 0.5; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+        .error { color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f5f5f5; }
+        h1 { color: #722F37; text-align: center; margin-bottom: 30px; }
+        h2 { color: #722F37; margin-top: 40px; margin-bottom: 20px; }
+        .table-section { margin-bottom: 50px; }
+        .rating-stars { color: #E8A317; }
+        .comment-cell { max-width: 300px; word-wrap: break-word; }
+        .comment-cell em { color: #999; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>☕ Gratified Coffee Data</h1>
+    <div id="loading" class="loading">Loading data...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    
+    <div class="table-section">
+        <h2>📋 Orders</h2>
+        <div id="orders-container"></div>
+    </div>
+    
+    <div class="table-section">
+        <h2>💭 Feedback</h2>
+        <div id="feedback-container"></div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const supabase = window.supabase.createClient('https://rnulfniumilpluvpxfgd.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJudWxmbml1bWlscGx1dnB4ZmdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NDI0MjEsImV4cCI6MjA2ODIxODQyMX0.pPVjZjfFEDp8WmWOiOammVUyrquvOF7Keiz1OnbbQbg');
+        let orders = [], feedback = [], ordersSortField = 'ordered_at', ordersSortDirection = 'desc', feedbackSortField = 'rating', feedbackSortDirection = 'desc';
+        
+        async function loadData() {
+            try {
+                const [ordersResponse, feedbackResponse] = await Promise.all([
+                    supabase.from('orders').select('*').order('ordered_at', { ascending: false }),
+                    supabase.from('feedback').select('*')
+                ]);
+                
+                if (ordersResponse.error) throw ordersResponse.error;
+                if (feedbackResponse.error) throw feedbackResponse.error;
+                
+                orders = ordersResponse.data;
+                feedback = feedbackResponse.data;
+                renderTables();
+                document.getElementById('loading').style.display = 'none';
+            } catch (error) {
+                document.getElementById('error').textContent = `Error loading data: ${error.message}`;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        function sortOrders(field) {
+            if (ordersSortField === field) ordersSortDirection = ordersSortDirection === 'asc' ? 'desc' : 'asc';
+            else { ordersSortField = field; ordersSortDirection = 'asc'; }
+            orders.sort((a, b) => {
+                const aVal = a[field] || '';
+                const bVal = b[field] || '';
+                return ordersSortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            });
+            renderTables();
+        }
+        
+        function sortFeedback(field) {
+            if (feedbackSortField === field) feedbackSortDirection = feedbackSortDirection === 'asc' ? 'desc' : 'asc';
+            else { feedbackSortField = field; feedbackSortDirection = 'asc'; }
+            feedback.sort((a, b) => {
+                const aVal = a[field] || '';
+                const bVal = b[field] || '';
+                if (field === 'rating') return feedbackSortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+                return feedbackSortDirection === 'asc' ? aVal.toString().localeCompare(bVal.toString()) : bVal.toString().localeCompare(aVal.toString());
+            });
+            renderTables();
+        }
+        
+        function renderTables() {
+            const ordersContainer = document.getElementById('orders-container');
+            const feedbackContainer = document.getElementById('feedback-container');
+            
+            if (!orders.length) {
+                ordersContainer.innerHTML = '<p>No orders found.</p>';
+            } else {
+                ordersContainer.innerHTML = `<table>
+                    <thead><tr>
+                        <th onclick="sortOrders('drink_id')">Drink ${ordersSortField === 'drink_id' ? (ordersSortDirection === 'asc' ? '▲' : '▼') : '⇅'}</th>
+                        <th onclick="sortOrders('variant')">Variant ${ordersSortField === 'variant' ? (ordersSortDirection === 'asc' ? '▲' : '▼') : '⇅'}</th>
+                        <th onclick="sortOrders('ordered_at')">Ordered ${ordersSortField === 'ordered_at' ? (ordersSortDirection === 'asc' ? '▲' : '▼') : '⇅'}</th>
+                    </tr></thead>
+                    <tbody>${orders.map(order => `<tr>
+                        <td>${order.drink_id}</td>
+                        <td>${order.variant || 'default'}</td>
+                        <td>${new Date(order.ordered_at).toLocaleString()}</td>
+                    </tr>`).join('')}</tbody>
+                </table>`;
+            }
+            
+            if (!feedback.length) {
+                feedbackContainer.innerHTML = '<p>No feedback found.</p>';
+            } else {
+                feedbackContainer.innerHTML = `<table>
+                    <thead><tr>
+                        <th onclick="sortFeedback('drink_id')">Drink ${feedbackSortField === 'drink_id' ? (feedbackSortDirection === 'asc' ? '▲' : '▼') : '⇅'}</th>
+                        <th onclick="sortFeedback('rating')">Rating ${feedbackSortField === 'rating' ? (feedbackSortDirection === 'asc' ? '▲' : '▼') : '⇅'}</th>
+                        <th onclick="sortFeedback('comment')">Comment ${feedbackSortField === 'comment' ? (feedbackSortDirection === 'asc' ? '▲' : '▼') : '⇅'}</th>
+                    </tr></thead>
+                    <tbody>${feedback.map(item => `<tr>
+                        <td>${item.drink_id}</td>
+                        <td><span class="rating-stars">${'★'.repeat(item.rating || 0)}${'☆'.repeat(5 - (item.rating || 0))}</span></td>
+                        <td class="comment-cell">${item.comment || '<em>No comment</em>'}</td>
+                    </tr>`).join('')}</tbody>
+                </table>`;
+            }
+        }
+        
+        loadData();
+    </script>
+</body>
+</html> 
