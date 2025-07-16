@@ -1,3 +1,21 @@
+// Cup configuration constants
+const CUP_CONFIG = {
+    TOP_RADIUS: 0.4,
+    BOTTOM_RADIUS: 0.35,
+    HEIGHT: 1.2,
+    SEGMENTS: 64,
+    RIM_RADIUS: 0.4,
+    RIM_TUBE_RADIUS: 0.02,
+    LID_TOP_RADIUS: 0.42,
+    LID_BOTTOM_RADIUS: 0.41,
+    LID_HEIGHT: 0.1,
+    SLEEVE_TOP_RADIUS: 0.405,
+    SLEEVE_BOTTOM_RADIUS: 0.375,
+    SLEEVE_HEIGHT: 0.4,
+    OPENING_RADIUS: 0.08,
+    OPENING_HEIGHT: 0.12
+};
+
 // Menu data for specialty drinks
 const menuData = {
   "call-the-cops": {
@@ -113,7 +131,10 @@ function initThreeScene() {
         
         console.log('OrbitControls initialized successfully');
     } else {
-        console.error('OrbitControls not loaded');
+        console.warn('OrbitControls not loaded - 3D viewer will be static');
+        // Set fallback camera position for better default view
+        camera.position.set(2, 1, 3);
+        camera.lookAt(0, 0, 0);
     }
     
     // Lighting
@@ -145,20 +166,15 @@ function initThreeScene() {
     // Handle resize
     window.addEventListener('resize', onWindowResize);
     
-    // Add a test cube to verify rendering
-    const testGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const testMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    const testCube = new THREE.Mesh(testGeometry, testMaterial);
-    testCube.position.y = -5; // Position it below view initially
-    scene.add(testCube);
-    
     console.log('Three.js scene initialized successfully');
 }
 
 // Create starry background
 function createStarryBackground() {
     const starsGeometry = new THREE.BufferGeometry();
-    const starCount = 2000;
+    // Reduce star count on mobile devices for better performance
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const starCount = isMobile ? 800 : 2000;
     const positions = new Float32Array(starCount * 3);
     const colors = new Float32Array(starCount * 3);
     const sizes = new Float32Array(starCount);
@@ -267,6 +283,16 @@ function createPaperCupTexture() {
 // Create coffee cup with ingredients
 function createCoffeeCup(drinkData) {
     if (currentCup) {
+        currentCup.traverse((child) => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(material => material.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
+        });
         scene.remove(currentCup);
     }
     
@@ -276,7 +302,7 @@ function createCoffeeCup(drinkData) {
     const paperTexture = createPaperCupTexture();
     
     // Cup geometry (tapered cylinder)
-    const cupGeometry = new THREE.CylinderGeometry(0.4, 0.35, 1.2, 64);
+    const cupGeometry = new THREE.CylinderGeometry(CUP_CONFIG.TOP_RADIUS, CUP_CONFIG.BOTTOM_RADIUS, CUP_CONFIG.HEIGHT, CUP_CONFIG.SEGMENTS);
     const cupMaterial = new THREE.MeshPhysicalMaterial({
         map: paperTexture,
         color: new THREE.Color(drinkData.cupColor),
@@ -295,7 +321,7 @@ function createCoffeeCup(drinkData) {
     cupGroup.add(cup);
     
     // Add a rim
-    const rimGeometry = new THREE.TorusGeometry(0.4, 0.02, 8, 32);
+    const rimGeometry = new THREE.TorusGeometry(CUP_CONFIG.RIM_RADIUS, CUP_CONFIG.RIM_TUBE_RADIUS, 8, 32);
     const rimMaterial = new THREE.MeshBasicMaterial({
         color: 0xE8A317,
         transparent: true,
@@ -307,7 +333,7 @@ function createCoffeeCup(drinkData) {
     cupGroup.add(cupRim);
     
     // Lid
-    const lidGeometry = new THREE.CylinderGeometry(0.42, 0.41, 0.1, 64);
+    const lidGeometry = new THREE.CylinderGeometry(CUP_CONFIG.LID_TOP_RADIUS, CUP_CONFIG.LID_BOTTOM_RADIUS, CUP_CONFIG.LID_HEIGHT, CUP_CONFIG.SEGMENTS);
     const lidMaterial = new THREE.MeshPhysicalMaterial({
         color: new THREE.Color(drinkData.cupColor).multiplyScalar(0.8),
         roughness: 0.2,
@@ -320,7 +346,7 @@ function createCoffeeCup(drinkData) {
     cupGroup.add(lid);
     
     // Add coffee sleeve with Gratified branding
-    const sleeveGeometry = new THREE.CylinderGeometry(0.405, 0.375, 0.4, 64);
+    const sleeveGeometry = new THREE.CylinderGeometry(CUP_CONFIG.SLEEVE_TOP_RADIUS, CUP_CONFIG.SLEEVE_BOTTOM_RADIUS, CUP_CONFIG.SLEEVE_HEIGHT, CUP_CONFIG.SEGMENTS);
     
     // Create sleeve texture
     const sleeveCanvas = document.createElement('canvas');
@@ -366,7 +392,7 @@ function createCoffeeCup(drinkData) {
     cupGroup.add(sleeve);
     
     // Lid opening
-    const openingGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.12, 16);
+    const openingGeometry = new THREE.CylinderGeometry(CUP_CONFIG.OPENING_RADIUS, CUP_CONFIG.OPENING_RADIUS, CUP_CONFIG.OPENING_HEIGHT, 16);
     const openingMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
     const opening = new THREE.Mesh(openingGeometry, openingMaterial);
     opening.position.y = 0.65;
@@ -521,11 +547,16 @@ function hideVisualization() {
 window.hideVisualization = hideVisualization;
 
 function startRenderLoop() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let frameCount = 0;
+    
     function animate() {
         requestAnimationFrame(animate);
+        frameCount++;
         
-        // Animate stars twinkling
-        if (stars && stars.geometry.attributes.size) {
+        // Animate stars twinkling - reduce frequency on mobile for performance
+        const shouldUpdateStars = isMobile ? frameCount % 3 === 0 : true;
+        if (stars && stars.geometry.attributes.size && shouldUpdateStars) {
             const time = Date.now() * 0.001;
             const sizes = stars.geometry.attributes.size.array;
             const originalSizes = stars.userData.originalSizes;

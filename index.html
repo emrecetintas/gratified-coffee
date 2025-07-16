@@ -213,72 +213,6 @@
             letter-spacing: 8px;
         }
 
-        .drink-category {
-            margin-top: 30px;
-            margin-bottom: 25px;
-        }
-
-        .category-title {
-            font-size: 22px;
-            color: var(--deep-teal);
-            font-weight: 600;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-            font-style: italic;
-            padding-left: 10px;
-            border-left: 3px solid var(--dusty-rose);
-        }
-
-        .menu-item {
-            margin-bottom: 12px;
-            line-height: 1.7;
-            padding: 12px 20px;
-            background-color: rgba(232, 163, 23, 0.08);
-            border-left: 4px solid var(--burnt-orange);
-            font-size: 18px;
-            margin-left: 15px;
-        }
-
-        .menu-item p {
-            margin: 0;
-            color: var(--charcoal-ink);
-        }
-
-        .coming-soon {
-            background-color: var(--burnt-orange);
-            color: var(--cream-parchment);
-            padding: 6px 12px;
-            font-size: 12px;
-            margin-left: 12px;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border: 2px solid var(--rich-saffron);
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--olive-bronze);
-            margin-top: 60px;
-            font-size: 16px;
-            letter-spacing: 2px;
-            border-top: 3px solid var(--dusty-rose);
-            background-color: rgba(232, 163, 23, 0.05);
-        }
-
-        footer a {
-            color: var(--warm-amber);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-weight: 400;
-            margin: 0 20px;
-        }
-
-        footer a:hover {
-            color: var(--deep-burgundy);
-        }
-
         /* 3D Viewer Styles */
         .viewer-container {
             position: fixed;
@@ -342,7 +276,6 @@
         #coffeeViewer canvas:active {
             cursor: grabbing;
         }
-
         .menu-item {
             margin-bottom: 12px;
             line-height: 1.7;
@@ -350,9 +283,48 @@
             background-color: rgba(232, 163, 23, 0.08);
             border-left: 4px solid var(--burnt-orange);
             font-size: 18px;
-            margin-left: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        .menu-item p {
+            margin: 0;
+            color: var(--charcoal-ink);
+        }
+
+        .coming-soon {
+            background-color: var(--burnt-orange);
+            color: var(--cream-parchment);
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-left: 12px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid var(--rich-saffron);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--olive-bronze);
+            margin-top: 60px;
+            font-size: 16px;
+            letter-spacing: 2px;
+            border-top: 3px solid var(--dusty-rose);
+            background-color: rgba(232, 163, 23, 0.05);
+        }
+
+        footer a {
+            color: var(--warm-amber);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 400;
+            margin: 0 20px;
+        }
+
+        footer a:hover {
+            color: var(--deep-burgundy);
         }
 
         .menu-item:hover {
@@ -373,7 +345,6 @@
                 height: 350px;
             }
         }
-
         @media (max-width: 768px) {
             .container {
                 padding: 40px 20px;
@@ -410,17 +381,6 @@
             .menu-item {
                 padding: 10px 15px;
                 font-size: 16px;
-                margin-left: 10px;
-            }
-
-            .category-title {
-                font-size: 20px;
-                padding-left: 8px;
-            }
-
-            .drink-category {
-                margin-top: 20px;
-                margin-bottom: 20px;
             }
 
             .viewer-container {
@@ -467,50 +427,25 @@
         
         <div class="content">
             <div class="section">
-                <h2 class="section-title">Basic Drinks</h2>
+                <h2 class="section-title">Drinks</h2>
                 
-                <!-- Coffee -->
-                <div class="drink-category">
-                    <h3 class="category-title">Coffee</h3>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Ethiopian single origin — bright, fruity notes</p>
-                    </div>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Colombian blend — smooth, balanced</p>
-                    </div>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Dark roast — bold, rich finish</p>
-                    </div>
+                <div class="menu-item">
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Cold brew (iced or nitro)</p>
                 </div>
-                
-                <!-- Tea -->
-                <div class="drink-category">
-                    <h3 class="category-title">Tea</h3>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Chai — cardamom, cinnamon, ginger blend</p>
-                    </div>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Jasmine green — delicate floral notes</p>
-                    </div>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Barley tea — nutty, caffeine-free</p>
-                    </div>
+                <div class="menu-item">
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Espresso drinks</p>
                 </div>
-                
-                <!-- Other -->
-                <div class="drink-category">
-                    <h3 class="category-title">Other</h3>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Matcha — premium ceremonial grade</p>
-                    </div>
-                    <div class="menu-item">
-                        <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Cacao — pure, ceremonial grade</p>
-                    </div>
+                <div class="menu-item">
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Cacao</p>
+                </div>
+                <div class="menu-item">
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Teas: matcha, barley, yerba mate <span class="coming-soon">coming soon: mid-July</span></p>
                 </div>
             </div>
             
             <div class="section">
-                <h2 class="section-title">Specialty Drinks</h2>
+                <h2 class="section-title">Specialty <span class="coming-soon">coming soon: October</span></h2>
+                
                 <div class="menu-item" data-drink="call-the-cops">
                     <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>I'm Gonna Call the Cops — activated charcoal espresso</p>
                 </div>
@@ -518,30 +453,39 @@
                     <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Ma'am/Sir, This is a Wendy's — lavender cold brew</p>
                 </div>
                 <div class="menu-item" data-drink="kill-myself">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>I'm Gonna Kill Myself (No Don't, You're So Hot) — matcha rosemary tonic</p>
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>I'm Gonna Kill Myself (No Don't, You're So Hot) — chocolate + rose</p>
                 </div>
             </div>
             
             <div class="section">
-                <h2 class="section-title">Food</h2>
+                <h2 class="section-title">Bites <span class="coming-soon">coming soon: August</span></h2>
+                
                 <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Overnight Oats — blueberries, seeds, maple syrup</p>
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Cantaloupe + red chard + orange</p>
                 </div>
                 <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Salad — chipotle</p>
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Avocado + chocolate syrup + cayenne</p>
                 </div>
                 <div class="menu-item">
-                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Sushi — fresh rolls</p>
+                    <p><span style="color: var(--burnt-orange); margin-right: 8px;">◆</span>Rotating seasonal</p>
                 </div>
             </div>
         </div>
 
         <footer>
-            © 2025 Gratified. All rights reserved.
-            <div style="margin-top: 20px;">
-                <a href="https://gratified.com">gratified.com</a>
-                <a href="https://gratified.coffee">gratified.coffee</a>
-                <a href="https://gratified.art">gratified.art</a>
+            <div class="footer-links">
+                <a href="https://bsky.app/profile/gratifiedwegrow.bsky.social" target="_blank" class="footer-link">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Bluesky_Logo.svg/1200px-Bluesky_Logo.svg.png" style="width: 16px; height: 16px;">
+                    bluesky
+                </a>
+                <a href="https://substack.com/@gratifiedwegrow" target="_blank" class="footer-link">
+                    <img src="https://companieslogo.com/img/orig/substack-3fcbaa60.png" style="width: 16px; height: 16px;">
+                    substack
+                </a>
+                <a href="mailto:leah@gratified.com" class="footer-link">
+                    <div class="footer-icon"></div>
+                    contact
+                </a>
             </div>
         </footer>
     </div>
